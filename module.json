@@ -1,0 +1,19 @@
+{
+    "author": "<font color='#00FFFF'>Salchy</font>",
+    "description": "Salchy Advanced Sorc",
+    "disableAutoUpdate": true,
+    "disabled": false,
+    "donationUrl": "",
+    "name": "salchyadv",
+    "options": {
+        "niceName": "<font color='#FDD017'>Salchy Advanced Sorc</font>",
+        "guiName": "<font color='#FDD017'>Salchy Advanced Sorc</font>",
+        "reloadable": true,
+        "settingsFile": "config.json",
+        "settingsMigrator": "settings_migrator.js",
+        "settingsVersion": 1		
+	},
+    "servers": [""],
+    "supportUrl": "",
+    "version": "<font color='#00FFFF'>1.0.0</font>"
+}
