@@ -1,4 +1,7 @@
 # tera-advanced-sorc
+
+fixed a bug on implosion animation cancel
+
 UPDATE!! EVEN MORE ADVANCED! For the salt...
 
 Faster casting on every skill, improved animation cancelling and highest HPM possible on fusion/prime.
