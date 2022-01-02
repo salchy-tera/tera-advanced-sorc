@@ -357,7 +357,7 @@ module.exports = function supersorc(mod) {
 					
 					replaced = true
 				}
-				if(!isCD_implosion && !replaced && implosion_enabled && isCD_arcane && !isCD_fb)) {
+				if(!isCD_implosion && !replaced && implosion_enabled && isCD_arcane && !isCD_fb) {
 					event.skill.id = implosion_id
 					
 					replaced = true
