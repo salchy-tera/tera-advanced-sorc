@@ -19,3 +19,5 @@ Discord: Tried#5962
 Commands: type sorc in proxy chat to enable/disable the mod
 
 Use with my auto cast mod to insta lock the boss with flaming barrage -> https://github.com/salchy-lab/tera-autocast-master
+
+Compatible with SP/NGSP (and recommended to use with them, specially with NGSP)
