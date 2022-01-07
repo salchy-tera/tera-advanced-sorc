@@ -12,6 +12,10 @@ module.exports = function supersorc(mod) {
 	let replaced = false
 	let fusion_enabled = false
 	let implosion_enabled = false
+	let MB_active = false
+	let bs = false
+	let clientTime
+	
 	
 	//CDs
 	let isCD_prime = false
@@ -28,8 +32,34 @@ module.exports = function supersorc(mod) {
 	let isCD_barrage = false
 	let isCD_mb = false
 	let isCD_implosion = false
+	let isCD_lances = false
+	
+	
+	
+	//TOs
+	
+	let isCD_prime_To = null
+	let isCD_iceberg_To = null
+	let isCD_arcane_fus_To = null
+	let isCD_fusion_To = null
+	let isCD_arcane_To = null
+	let isCD_fb_To = null
+	let isCD_hail_To = null
+	let isCD_void_To = null
+	let isCD_nova_To = null
+	let isCD_frost_To = null
+	let isCD_light_To = null
+	let isCD_barrage_To = null
+	let isCD_mb_To = null
+	let isCD_implosion_To = null
+	let isCD_lances_To = null	
+	
+	
+	
 	
 	//IDs
+	let paint_id = 160800
+	let mb_abnormality_id = 503061	
 	let fire_buff = 502070
 	let ice_buff = 502071
 	let arcane_buff = 502072
@@ -65,6 +95,7 @@ module.exports = function supersorc(mod) {
 	//Boss
 	let bossid
 	let bossloc
+	let bossw
 	let monsters = []
 	let block_hit = false
 
@@ -77,6 +108,28 @@ module.exports = function supersorc(mod) {
 	mod.hook('S_LOGIN', 14, (event) => {
 		cid = event.gameId
 	})
+
+	mod.hook('S_ABNORMALITY_BEGIN', 5, (event) => {
+		if(!enabled) return
+		if(mod.game.me.class !== 'sorcerer') return		
+		if(event.target==mod.game.me.gameId && event.id==mb_abnormality_id) {
+			MB_active = true
+		}
+	})
+	mod.hook('S_ABNORMALITY_END', 1, (event) => {
+		if(!enabled) return
+		if(mod.game.me.class !== 'sorcerer') return		
+		if(event.target==mod.game.me.gameId && event.id==mb_abnormality_id) {
+			MB_active = false
+		}		
+	})
+	mod.hook('S_ABNORMALITY_REFRESH', 2, (event) => {
+		if(!enabled) return
+		if(mod.game.me.class !== 'sorcerer') return		
+		if(event.target==mod.game.me.gameId && event.id==mb_abnormality_id) {
+			MB_active = true
+		}		
+	})	
 	
 	mod.hook('S_SKILL_CATEGORY', 4, event => {
 		if(!enabled) return
@@ -93,90 +146,111 @@ module.exports = function supersorc(mod) {
 	mod.hook('S_START_COOLTIME_SKILL', 3, {order: -999999}, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
+		if(event.skill.id==lances_id) {
+			clearTimeout(isCD_lances_To)
+			isCD_lances = true
+			isCD_lances_To = setTimeout(function () {
+				isCD_lances = false
+			}, event.cooldown)
+		}		
 		if(event.skill.id==mb_id) {
+			clearTimeout(isCD_mb_To)
 			isCD_mb = true
-			setTimeout(function () {
+			isCD_mb_To = setTimeout(function () {
 				isCD_mb = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==implosion_id) {
+			clearTimeout(isCD_implosion_To)
 			isCD_implosion = true
-			setTimeout(function () {
+			isCD_implosion_To = setTimeout(function () {
 				isCD_implosion = false
 			}, event.cooldown)
 		}		
 		if(event.skill.id==prime_id) {
+			clearTimeout(isCD_prime_To)
 			isCD_prime = true
-			setTimeout(function () {
+			isCD_prime_To = setTimeout(function () {
 				isCD_prime = false
 			}, event.cooldown)
 			return false
 		}
 		if(event.skill.id==iceberg_id) {
+			clearTimeout(isCD_iceberg_To)
 			isCD_iceberg = true
-			setTimeout(function () {
+			isCD_iceberg_To = setTimeout(function () {
 				isCD_iceberg = false
 			}, event.cooldown)
 			return false
 		}
 		if(event.skill.id==arcane_fus_id) {
+			clearTimeout(isCD_arcane_fus_To)
 			isCD_arcane_fus = true
-			setTimeout(function () {
+			isCD_arcane_fus_To = setTimeout(function () {
 				isCD_arcane_fus = false
 			}, event.cooldown)
 			return false
 		}		
 		if(event.skill.id==fusion_id) {
+			clearTimeout(isCD_fusion_To)
 			isCD_fusion = true
-			setTimeout(function () {
+			isCD_fusion_To = setTimeout(function () {
 				isCD_fusion = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==arcane_press_id) {
+			clearTimeout(isCD_arcane_To)
 			isCD_arcane = true
-			setTimeout(function () {
+			isCD_arcane_To = setTimeout(function () {
 				isCD_arcane = false
 			}, event.cooldown)
 		}		
 		if(event.skill.id==fb_id) {
+			clearTimeout(isCD_fb_To)
 			isCD_fb = true
-			setTimeout(function () {
+			isCD_fb_To = setTimeout(function () {
 				isCD_fb = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==hail_id) {
+			clearTimeout(isCD_hail_To)
 			isCD_hail = true
-			setTimeout(function () {
+			isCD_hail_To = setTimeout(function () {
 				isCD_hail = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==void_id) {
+			clearTimeout(isCD_void_To)
 			isCD_void = true
-			setTimeout(function () {
+			isCD_void_To = setTimeout(function () {
 				isCD_void = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==nova_id) {
+			clearTimeout(isCD_nova_To)
 			isCD_nova = true
-			setTimeout(function () {
+			isCD_nova_To = setTimeout(function () {
 				isCD_nova = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==frost_id) {
+			clearTimeout(isCD_frost_To)
 			isCD_frost = true
-			setTimeout(function () {
+			isCD_frost_To = setTimeout(function () {
 				isCD_frost = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==light_id) {
+			clearTimeout(isCD_light_To)
 			isCD_light = true
-			setTimeout(function () {
+			isCD_light_To = setTimeout(function () {
 				isCD_light = false
 			}, event.cooldown)
 		}
 		if(event.skill.id==barrage_id) {
+			clearTimeout(isCD_barrage_To)
 			isCD_barrage = true
-			setTimeout(function () {
+			isCD_barrage_To = setTimeout(function () {
 				isCD_barrage = false
 			}, event.cooldown)
 		}		
@@ -185,7 +259,7 @@ module.exports = function supersorc(mod) {
 	mod.hook('S_SPAWN_NPC', 12, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return		
-		monsters.push({ gameId: event.gameId, loc: event.loc })
+		monsters.push({ gameId: event.gameId, loc: event.loc, w: event.w })
 	})
 	mod.hook('S_BOSS_GAGE_INFO', 3, event => {
 		if(!enabled) return
@@ -200,7 +274,11 @@ module.exports = function supersorc(mod) {
 			SoundID: 2023
 		})		
 		let monster = monsters.find(m => m.gameId === event.id)
-		if (monster) bossloc = monster.loc		
+		if (monster) { 
+			bossloc = monster.loc
+			bossw = monster.w
+		}
+			
 				
 		
 	})
@@ -209,8 +287,14 @@ module.exports = function supersorc(mod) {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
 		let monster = monsters.find(m => m.gameId === event.gameId)
-		if (monster) monster.loc = event.loc
-		if(bossid == event.gameId) bossloc = event.loc		
+		if (monster) { 
+			monster.loc = event.loc
+			monster.w = event.w
+		}
+		if(bossid == event.gameId) { 
+			bossloc = event.loc
+			bossw = event.w
+		}
 	})
 	mod.hook('S_DESPAWN_NPC', 3, event => {
 		if(!enabled) return
@@ -219,6 +303,7 @@ module.exports = function supersorc(mod) {
 		if(bossid == event.gameId) { 
 			bossid = null
 			bossloc = null
+			bossw = null
 		}	
 	})
 	
@@ -227,6 +312,7 @@ module.exports = function supersorc(mod) {
 		if(mod.game.me.class !== 'sorcerer') return
 		block_hit = false
 		if(!bossid) return
+		if(!bs) return
 		let targets = []		
 			targets.push({
 				gameId: bossid
@@ -264,7 +350,10 @@ module.exports = function supersorc(mod) {
 	mod.hook('S_ACTION_STAGE', 9, { order: -999999 }, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
-		if(bossid == event.gameId) bossloc = event.loc
+		if(bossid == event.gameId) { 
+			bossloc = event.loc
+			bossw = event.w
+		}		
 		if(event.gameId==mod.game.me.gameId && event.skill.id==arcane_press_id && event.stage==2) {
 			mod.send('C_PRESS_SKILL', 4, {
 				skill: {
@@ -279,7 +368,7 @@ module.exports = function supersorc(mod) {
 				w: myAngle								
 			})
 		}
-		if(event.gameId==mod.game.me.gameId && ((Math.floor(event.skill.id / 10000))==39) && event.stage==1) {
+		if(event.gameId==mod.game.me.gameId && ((Math.floor(event.skill.id / 10000))==39) && event.stage==2) {
 			mod.send('S_ACTION_END', 5, {
 				gameId: event.gameId,
 				loc: {
@@ -315,20 +404,25 @@ module.exports = function supersorc(mod) {
 	mod.hook('S_ACTION_END', 5, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
-		if(bossid == event.gameId) bossloc = event.loc
+		if(bossid == event.gameId) { 
+			bossloc = event.loc
+			bossw = event.w
+		}
 	})
 	
-	mod.hook('S_CANNOT_START_SKILL', 4, event => {
+	mod.hook('S_CANNOT_START_SKILL', 4, { order: -999999 }, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
-		if(event.skill.id==fusion_id || event.skill.id==prime_id) {
+		/*if(event.skill.id==fusion_id || event.skill.id==prime_id) {
 			stacks = 0
 		}
+		return false*/
 	})			
 	mod.hook('S_PLAYER_STAT_UPDATE', 17, event => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return
 		stacks = 0
+		if(!event.alive) MB_active = false
 		event.fireEdge = 4
 		event.iceEdge = 4
 		event.lightningEdge = 4
@@ -342,17 +436,23 @@ module.exports = function supersorc(mod) {
 	mod.hook('C_PLAYER_LOCATION', 5, (event) => {
 		myPosition = event.loc
 		myAngle = event.w
+		clientTime = event.time
 	})
 	
-	mod.hook('C_START_SKILL', 7, { order: -1000 }, (event) => {
+	mod.hook('C_START_SKILL', 7, { order: -Infinity }, (event) => {
 		if(!enabled) return
 		if(mod.game.me.class !== 'sorcerer') return		
 		myPosition = event.loc
 		myAngle = event.w
 		replaced = false
-		if(event.skill.id===stun_trap && bossloc) {
+		bs = false
+		if((event.skill.id===stun_trap || event.skill.id===paint_id)) {		
+				if(event.skill.id===paint_id) bs = true
+				if(event.skill.id===stun_trap) bs = false
+				if(bs && !bossloc) return false
+				if(!isCD_lances) dolance = true			
 
-				if(!isCD_mb && !replaced) {
+				if(!isCD_mb && !replaced && bs) {
 					event.skill.id = mb_id
 					
 					replaced = true
@@ -364,19 +464,23 @@ module.exports = function supersorc(mod) {
 				}
 				if(!isCD_prime && (stacks>=2) && !replaced && fusion_enabled) {
 					event.skill.id = prime_id
-					event.dest = bossloc
-					replaced = true					
+					replaced = true			
+					if(bs) event.dest = bossloc
+					if(!bs) {
+						prime(distance,0)
+						return false
+					}
 				}					
-				if(!isCD_fusion && (stacks>=2) && !replaced && fusion_enabled) {
+				if(!isCD_fusion && (stacks>=2) && !replaced && fusion_enabled && MB_active) {
 					event.skill.id = fusion_id
-					event.dest = bossloc
-					replaced = true					
+					replaced = true
+					if(bs) event.dest = bossloc	
 				}										
 			
 				if(!isCD_hail && !replaced) {
 					event.skill.id = hail_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}
 				if(!isCD_arcane && !replaced) {
 					mod.send('C_PRESS_SKILL', 4, {
@@ -395,38 +499,64 @@ module.exports = function supersorc(mod) {
 				}
 				if(!isCD_fb && !replaced) {
 					event.skill.id = fb_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}
 				if(!isCD_void && !replaced) {
 					event.skill.id = void_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}					
 				if(!isCD_nova && !replaced) {
 					event.skill.id = nova_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}
 				if(!isCD_light && !replaced) {
 					event.skill.id = light_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}				
 				if(!isCD_frost && !replaced) {
 					event.skill.id = frost_id
-					event.dest = bossloc
 					replaced = true
+					if(bs) event.dest = bossloc						
 				}
 				if(!isCD_barrage && !replaced) {
 					event.skill.id = barrage_id
-					event.target = bossid
 					replaced = true
+					if(bs) event.target = bossid						
 				}
+				if(bs && replaced) {
+
+					/*event.loc.x = (Math.cos(bossw) * -150) + bossloc.x
+					event.loc.y = (Math.sin(bossw) * -150) + bossloc.y
+					event.loc.z = bossloc.z
+					event.w = bossw
+					mod.send('S_INSTANT_MOVE', 3, {
+						gameId: mod.game.me.gameId,
+						loc: event.loc,
+						w: event.w
+					});*/
+					/*mod.send('C_PLAYER_LOCATION', 5, {
+						loc: event.loc,
+						w: event.w,
+						lookDirection: event.w,
+						dest: {x:0, y:0, z:0},
+						type: 0,
+						jumpDistance: 0,
+						inShuttle: false,
+						time: clientTime + 5
+					})*/
+				}
+				if(dolance) {
+					dolance = false
+					lances(distance,0)
+				}					
 				if(replaced) return true
 				if(!replaced) return false				
 		}
-		if(event.skill.id===stun_trap && !bossloc) {
+		if((event.skill.id===stun_trap || event.skill.id===paint_id) && !bossloc) {
 			return false
 		}
 		let sInfo = getSkillInfo(event.skill.id)		
@@ -447,7 +577,8 @@ module.exports = function supersorc(mod) {
 		if(dolance) {
 			dolance = false
 			lances(distance,0)
-		}				
+		}
+		
 	})
 
 	mod.hook('C_START_INSTANCE_SKILL', 7, (event) => {
@@ -491,8 +622,12 @@ module.exports = function supersorc(mod) {
 				huntingZoneId: 0,
 				id: isCD_prime ? fusion_id : prime_id
 			},
-			w: myAngle,
-			loc: myPosition,
+			w: bs ? bossw : myAngle,
+			loc: {
+					x: bs ? (Math.cos(bossw) * -150) + bossloc.x : myPosition.x,
+					y: bs ? (Math.sin(bossw) * -150) + bossloc.y : myPosition.y,
+					z: bs ? bossloc.z : myPosition.z
+			},
 			dest: {
 				x: x,
 				y: y,
@@ -519,8 +654,12 @@ module.exports = function supersorc(mod) {
 				huntingZoneId: 0,
 				id: lances_id
 			},
-			w: myAngle,
-			loc: myPosition,
+			w: bs ? bossw : myAngle,
+			loc: {
+					x: bs ? ((Math.cos(bossw) * -150) + bossloc.x) : myPosition.x,
+					y: bs ? ((Math.sin(bossw) * -150) + bossloc.y) : myPosition.y,
+					z: bs ? bossloc.z : myPosition.z
+			},
 			dest: {
 				x: x,
 				y: y,
